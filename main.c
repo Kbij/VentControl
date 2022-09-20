@@ -1,40 +1,24 @@
+#include "ventcontrol.h"
+#include "server.h"
+#include "types.h"
 #include "pico/cyw43_arch.h"
 #include "pico/stdlib.h"
-
 #include "lwip/netif.h"
 #include "lwip/ip4_addr.h"
 #include "lwip/apps/lwiperf.h"
-
+#include <lwip/sockets.h>
 #include "FreeRTOS.h"
 #include "task.h"
+#include "queue.h"
 
-#ifndef RUN_FREERTOS_ON_CORE
-#define RUN_FREERTOS_ON_CORE 0
-#endif
-
-#define TEST_TASK_PRIORITY				( tskIDLE_PRIORITY + 2UL )
-#define BLINK_TASK_PRIORITY				( tskIDLE_PRIORITY + 1UL )
+#define TEST_TASK_PRIORITY				( tskIDLE_PRIORITY + 1UL )
+#define VENTCONTROL_TASK_PRIORITY		( tskIDLE_PRIORITY + 1UL )
 
 
-void blink_task(__unused void *params) {
-    bool on = false;
-    printf("blink_task starts\n");
-    while (true) {
-#if 0 && configNUM_CORES > 1
-        static int last_core_id;
-        if (portGET_CORE_ID() != last_core_id) {
-            last_core_id = portGET_CORE_ID();
-            printf("blinking now from core %d\n", last_core_id);
-        }
-#endif
-        cyw43_arch_gpio_put(0, on);
-        on = !on;
-        vTaskDelay(200);
-    }
-}
+void main_task(void *params) {
+    SendReceiveQueues queues;
+    queues =  *(SendReceiveQueues*)params;
 
-void main_task(__unused void *params) {
-    
     if (cyw43_arch_init()) {
         printf("failed to initialise\n");
         return;
@@ -46,13 +30,9 @@ void main_task(__unused void *params) {
     printf("Connecting to WiFi...\n");
     if (cyw43_arch_wifi_connect_timeout_ms("MyBeer", "jolien is een trees", CYW43_AUTH_WPA2_AES_PSK, 30000)) {
         printf("failed to connect.\n");
-       // exit(1);
     } else {
         printf("Connected.\n");
     }
-
-    xTaskCreate(blink_task, "BlinkThread", configMINIMAL_STACK_SIZE, NULL, BLINK_TASK_PRIORITY, NULL);
-
 
     while(true) {
         int current_link_status = cyw43_tcpip_link_status(&cyw43_state, 0);
@@ -87,6 +67,9 @@ void main_task(__unused void *params) {
                 if (current_link_status != previous_link_status)
                 {
                     printf("Link up.\n");
+                    TaskHandle_t server_task_handle;
+                    xTaskCreate(server_task, "Server", configMINIMAL_STACK_SIZE, &queues, TEST_TASK_PRIORITY, &server_task_handle);
+
                 }
                 break;
             }
@@ -124,43 +107,20 @@ void main_task(__unused void *params) {
     cyw43_arch_deinit();
 }
 
-void vLaunch( void) {
-    TaskHandle_t task;
-    xTaskCreate(main_task, "TestMainThread", configMINIMAL_STACK_SIZE, NULL, TEST_TASK_PRIORITY, &task);
-
-#if NO_SYS && configUSE_CORE_AFFINITY && configNUM_CORES > 1
-    // we must bind the main task to one core (well at least while the init is called)
-    // (note we only do this in NO_SYS mode, because cyw43_arch_freertos
-    // takes care of it otherwise)
-    vTaskCoreAffinitySet(task, 1);
-#endif
-
-    /* Start the tasks and timer running. */
-    vTaskStartScheduler();
-}
-
 int main( void )
 {
     stdio_init_all();
+    SendReceiveQueues queues;
+    queues.receive_queue = xQueueCreate(MAX_QUEUE_LENGTH, sizeof(int));
+    queues.send_queue = xQueueCreate(MAX_QUEUE_LENGTH, sizeof(int));
 
-    /* Configure the hardware ready to run the demo. */
-    const char *rtos_name;
-#if ( portSUPPORT_SMP == 1 )
-    rtos_name = "FreeRTOS SMP";
-#else
-    rtos_name = "FreeRTOS";
-#endif
+    TaskHandle_t main_task_handle;
+    xTaskCreate(main_task, "MainThread", configMINIMAL_STACK_SIZE, &queues, TEST_TASK_PRIORITY, &main_task_handle);
 
-#if ( portSUPPORT_SMP == 1 ) && ( configNUM_CORES == 2 )
-    printf("Starting %s on both cores:\n", rtos_name);
-    vLaunch();
-#elif ( RUN_FREE_RTOS_ON_CORE == 1 )
-    printf("Starting %s on core 1:\n", rtos_name);
-    multicore_launch_core1(vLaunch);
-    while (true);
-#else
-    printf("Starting %s on core 0:\n", rtos_name);
-    vLaunch();
-#endif
+    TaskHandle_t ventcontrol_task_handle;
+    xTaskCreate(ventcontrol_task, "VentControlThread", configMINIMAL_STACK_SIZE, &queues, VENTCONTROL_TASK_PRIORITY, &ventcontrol_task_handle);
+
+    vTaskStartScheduler();
+
     return 0;
 }

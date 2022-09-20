@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.13)
 set(FREERTOS_KERNEL_PATH "/opt/FreeRTOS-Kernel")
-#set(FREERTOS_SRC_DIRECTORY "${PICO_SDK_PATH}/lib/tinyusb/lib/FreeRTOS-Kernel") 
 
 include($ENV{PICO_SDK_PATH}/external/pico_sdk_import.cmake)
 
@@ -15,7 +14,7 @@ set(PICO_BOARD "pico_w")
 
 pico_sdk_init()
  
-add_executable(${PROJECT_NAME} main.c)
+add_executable(${PROJECT_NAME} ventcontrol.c server.c connections.c main.c)
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}
 )
