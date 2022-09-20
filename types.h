@@ -13,6 +13,11 @@ typedef struct SendReceiveQueues {
   QueueHandle_t send_queue;
 } SendReceiveQueues;
 
+typedef struct message_t {
+  int client;
+  int value;
+} message_t;
+
 typedef struct connection_t {
     int sock;
     uint8_t receiveBuffer[BUFFER_SIZE];

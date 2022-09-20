@@ -55,6 +55,26 @@ void remove_connection(connection_t* connection)
     }
     xSemaphoreGive(connection_list.connections_mutex);
 }
+
+void send_queue_message(int message)
+{
+    if( xSemaphoreTake(connection_list.connections_mutex, ( TickType_t ) 10 ) == pdTRUE )
+    {    
+        for(int i = 0; i < MAX_CONN; i++)
+        {        
+            connection_t* conn = connection_list.connections + i;
+
+            //Send to all connections for the moment
+            if (conn->sock > -1)
+            {
+                if (xQueueSend(conn->connection_send_queue, (void *)&message, 10) != pdTRUE) {
+                }
+            }
+        }
+    }
+    xSemaphoreGive(connection_list.connections_mutex);
+}
+
 // void init_connections(connection_t* connections, int count)
 // {
 //     for(int i = 0; i < count; i++)
