@@ -13,25 +13,27 @@ void ventcontrol_task(void *params)
     SendReceiveQueues queues;
     queues =  *(SendReceiveQueues*)params;
     printf("ventcontrol_task, receive queue: %p, send queue: %p\n", queues.receive_queue, queues.send_queue);
-    bool on = true;
-    int count = 0;
+    int current_speed = 1;
 
     while (true) {
-        int value;
-        if (xQueueReceive(queues.receive_queue, (void *)&value, 0) == pdTRUE) {
-            count++;
-            cyw43_arch_gpio_put(0, on);
-            on = !on;
+        message_t message;
+        if (xQueueReceive(queues.receive_queue, (void *)&message, 0) == pdTRUE) {
+            printf("Message received from client: %d, type: %d\n", message.client, message.message_type);
+
             vTaskDelay(200);
-            printf("ventcontrol received, sending count: %d\n", count);
-            send_queue_message(count);
-            //xQueueSend(queues.send_queue, (void *)&count, 10);
+
+            if (message.message_type == MSG_SET_SPEED)
+            {
+                current_speed = message.value;
+            }
+            
+            message_t reply_message;
+            reply_message.client = message.client;
+            reply_message.message_type = MSG_CURRENT_SPEEED;
+            reply_message.value = current_speed;
+
+            send_queue_message(reply_message);
+            vTaskDelay(200);
         }
     }
-    // bool on = false;
-    // printf("blink_task starts\n");
-    //     cyw43_arch_gpio_put(0, on);
-    //     on = !on;
-    //     vTaskDelay(200);
-    // }    
 }

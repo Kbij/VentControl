@@ -23,6 +23,7 @@ void main_task(void *params) {
         printf("failed to initialise\n");
         return;
     }
+
     cyw43_arch_enable_sta_mode();
     netif_set_hostname(netif_default, "ventcontrol");
     int previous_link_status = cyw43_tcpip_link_status(&cyw43_state, 0);
@@ -66,10 +67,10 @@ void main_task(void *params) {
             {
                 if (current_link_status != previous_link_status)
                 {
-                    printf("Link up.\n");
+                    printf("Link up. Starting Server.\n");
+
                     TaskHandle_t server_task_handle;
                     xTaskCreate(server_task, "Server", configMINIMAL_STACK_SIZE, &queues, TEST_TASK_PRIORITY, &server_task_handle);
-
                 }
                 break;
             }
@@ -111,8 +112,8 @@ int main( void )
 {
     stdio_init_all();
     SendReceiveQueues queues;
-    queues.receive_queue = xQueueCreate(MAX_QUEUE_LENGTH, sizeof(int));
-    queues.send_queue = xQueueCreate(MAX_QUEUE_LENGTH, sizeof(int));
+    queues.receive_queue = xQueueCreate(MAX_QUEUE_LENGTH, sizeof(message_t));
+    queues.send_queue = xQueueCreate(MAX_QUEUE_LENGTH, sizeof(message_t));
 
     TaskHandle_t main_task_handle;
     xTaskCreate(main_task, "MainThread", configMINIMAL_STACK_SIZE, &queues, TEST_TASK_PRIORITY, &main_task_handle);

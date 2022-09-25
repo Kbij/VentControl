@@ -4,9 +4,15 @@
 #include "queue.h"
 #include "semphr.h"
 
-#define MAX_CONN          3
-#define MAX_QUEUE_LENGTH  5
-#define BUFFER_SIZE       128
+#define MAX_CONN             5
+#define MAX_QUEUE_LENGTH     10
+#define BUFFER_SIZE          128
+
+#define MSG_GET_STATUS       1
+#define MSG_CURRENT_SPEEED   2
+#define MSG_SET_SPEED        3
+#define MSG_REMAINING_TIME   4
+
 
 typedef struct SendReceiveQueues {
   QueueHandle_t receive_queue;
@@ -16,12 +22,13 @@ typedef struct SendReceiveQueues {
 typedef struct message_t {
   int client;
   int value;
+  int message_type;
 } message_t;
 
 typedef struct connection_t {
     int sock;
     uint8_t receiveBuffer[BUFFER_SIZE];
-    uint8_t receiveBufferLength;
+    uint8_t receiveBufferPos;
     QueueHandle_t connection_send_queue;
     QueueHandle_t connection_receive_queue;
 } connection_t;

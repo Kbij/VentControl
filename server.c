@@ -11,11 +11,7 @@
 #include "task.h"
 #include "types.h"
 
-
 #define CONNECTION_TASK_PRIORITY		( tskIDLE_PRIORITY + 1UL )
-
-// enum { MAX_CONN = 64 };
-// static connection_t connections[MAX_CONN];
 
 const int kConnectionThreadCount = 3;
 static xSemaphoreHandle s_ConnectionSemaphore;
@@ -38,69 +34,53 @@ static void send_message(int socket, char *msg)
     }
 }
 
-static int handle_single_command(connection_t* connection)
+static bool handle_single_command(connection_t* connection)
 {
-    char buffer[128];
-    int done = 0;
-    send_message(connection->sock, "Enter command: ");
- 
-    while (done < sizeof(buffer))
+    bool client_alive = true;
+
+    while (client_alive)
     {
-//  int32_t flags = MSG_PEEK | (nowait ? MSG_DONTWAIT : 0);
-//   int32_t bytesRecv = lwip_recv(m_socket, buffer, maxLength, flags);        
-        int done_now = recv(connection->sock, buffer + done, sizeof(buffer) - done, MSG_DONTWAIT);
-
-        //printf("done_now: %d, errno: %d\n", done_now, errno);
-
-        if (done_now <= 0 && errno != EAGAIN )
-            return -1;
-
-        char *end = 0;
-        if (done_now > 0) {
-            done += done_now;
-            end = strnstr(buffer, "\r", done);
-
-            if (xQueueSend(connection->connection_receive_queue, (void *)&done_now, 10) != pdTRUE) {
-
-            }            
-        }
-
-        int value;
-        if (xQueueReceive(connection->connection_send_queue, (void *)&value,  ( TickType_t ) 10) == pdTRUE) {
-            printf("Ventcontrol receive: %d\n", value);
-            char buffer[200];
-            sprintf(buffer, "\nVentrol number: %d\n", value);
-            send_message(connection->sock, buffer);
-        }
-
-        if (!end)
-            continue;
-        *end = 0;
- 
-        if (!strcmp(buffer, "on"))
+        if (!receive_data(connection))
         {
-            cyw43_arch_gpio_put(0, true);
-            send_message(connection->sock, "The LED is now on\r\n");
+            //Connection is closed
+            return false;
         }
-        else if (!strcmp(buffer, "off"))
+
+        message_t received_message;
+        //Check for received TCP messages
+        while(handle_receive_bufffer(connection, &received_message))
         {
-            cyw43_arch_gpio_put(0, false);
-            send_message(connection->sock, "The LED is now off\r\n");
+            printf("Message received from tcp client: %d, message_type: %d\n", received_message.client, received_message.message_type);
+            if (xQueueSend(connection->connection_receive_queue, (void *)&received_message, 10) != pdTRUE) {
+                printf("Unable to put message on receive_queue");
+            }
         }
-        else
+
+        //Check for messages from the connection_send_queue
+        while (xQueueReceive(connection->connection_send_queue, (void *)&received_message,  ( TickType_t ) 10) == pdTRUE)
         {
-            send_message(connection->sock, "Unknown command\r\n");
+            if (received_message.message_type = MSG_CURRENT_SPEEED)
+            {
+                char buffer[10];
+                sprintf(buffer, "S%d#", received_message.value);
+                send_message(connection->sock, buffer);
+            }
+            if (received_message.message_type = MSG_REMAINING_TIME)
+            {
+                char buffer[10];
+                sprintf(buffer, "T%d#", received_message.value);
+                send_message(connection->sock, buffer);
+            }
         }
-        break;
     }
- 
-    return 0;
+
+    return true;
 }
 
 static void do_handle_connection(void *params)
 {
     connection_t* connection = ( connection_t* ) params;
-    //int conn_sock = (int)arg;
+
     while (!handle_single_command(connection))
     {
     }
@@ -111,26 +91,13 @@ static void do_handle_connection(void *params)
     xSemaphoreGive(s_ConnectionSemaphore);
     vTaskDelete(NULL);
 }
- 
+
 static void handle_connection(connection_t* connection)
 {
     TaskHandle_t task;
     xSemaphoreTake(s_ConnectionSemaphore, portMAX_DELAY);
     xTaskCreate(do_handle_connection, "Connection Thread", configMINIMAL_STACK_SIZE, (void *)connection, CONNECTION_TASK_PRIORITY, &task);
 }
-
-// static void do_send_task(void *params)
-// {
-//     QueueHandle_t send_queue;
-//     send_queue = (QueueHandle_t) params;
-
-//     while (true) {
-//         int value;
-//         if (xQueueReceive(send_queue, (void *)&value, 0) == pdTRUE) {
-//             send_queue_message(value);
-//         }
-//     }    
-// }
 
 void server_task(void *params)
 {
@@ -141,9 +108,6 @@ void server_task(void *params)
     init_connections(queues.receive_queue);
     s_ConnectionSemaphore = xSemaphoreCreateCounting(kConnectionThreadCount, kConnectionThreadCount);
 
-    // TaskHandle_t send_task;
-    // xTaskCreate(do_send_task, "Send Thread", configMINIMAL_STACK_SIZE, (void *)queues.send_queue, CONNECTION_TASK_PRIORITY, &send_task);
-
     int server_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
     struct sockaddr_in listen_addr =
         {
@@ -152,25 +116,25 @@ void server_task(void *params)
             .sin_port = htons(1234),
             .sin_addr = 0,
         };
- 
+
     if (server_sock < 0)
     {
         printf("Unable to create socket: error %d", errno);
         return;
     }
- 
+
     if (bind(server_sock, (struct sockaddr *)&listen_addr, sizeof(listen_addr)) < 0)
     {
         printf("Unable to bind socket: error %d\n", errno);
         return;
     }
- 
+
     if (listen(server_sock, 1) < 0)
     {
         printf("Unable to listen on socket: error %d\n", errno);
         return;
     }
- 
+
     printf("Starting server at %s on port %u\n", ip4addr_ntoa(netif_ip4_addr(netif_list)), ntohs(listen_addr.sin_port));
 
     while (true)
