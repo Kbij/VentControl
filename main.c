@@ -1,5 +1,6 @@
 #include "ventcontrol.h"
 #include "server.h"
+#include "blink.h"
 #include "types.h"
 #include "pico/cyw43_arch.h"
 #include "pico/stdlib.h"
@@ -11,9 +12,9 @@
 #include "task.h"
 #include "queue.h"
 
-#define TEST_TASK_PRIORITY				( tskIDLE_PRIORITY + 1UL )
-#define VENTCONTROL_TASK_PRIORITY		( tskIDLE_PRIORITY + 1UL )
-
+#define SERVER_TASK_PRIORITY			( tskIDLE_PRIORITY + 3UL )
+#define VENTCONTROL_TASK_PRIORITY		( tskIDLE_PRIORITY + 2UL )
+#define BLINK_TASK_PRIORITY             ( tskIDLE_PRIORITY + 1UL )
 
 void main_task(void *params) {
     SendReceiveQueues queues;
@@ -70,7 +71,7 @@ void main_task(void *params) {
                     printf("Link up. Starting Server.\n");
 
                     TaskHandle_t server_task_handle;
-                    xTaskCreate(server_task, "Server", configMINIMAL_STACK_SIZE, &queues, TEST_TASK_PRIORITY, &server_task_handle);
+                    xTaskCreate(server_task, "Server", configMINIMAL_STACK_SIZE, &queues, SERVER_TASK_PRIORITY, &server_task_handle);
                 }
                 break;
             }
@@ -114,12 +115,16 @@ int main( void )
     SendReceiveQueues queues;
     queues.receive_queue = xQueueCreate(MAX_QUEUE_LENGTH, sizeof(message_t));
     queues.send_queue = xQueueCreate(MAX_QUEUE_LENGTH, sizeof(message_t));
+    queues.blink_queue = xQueueCreate(MAX_QUEUE_LENGTH, sizeof(int));
 
     TaskHandle_t main_task_handle;
-    xTaskCreate(main_task, "MainThread", configMINIMAL_STACK_SIZE, &queues, TEST_TASK_PRIORITY, &main_task_handle);
+    xTaskCreate(main_task, "MainThread", configMINIMAL_STACK_SIZE, &queues, SERVER_TASK_PRIORITY, &main_task_handle);
 
     TaskHandle_t ventcontrol_task_handle;
     xTaskCreate(ventcontrol_task, "VentControlThread", configMINIMAL_STACK_SIZE, &queues, VENTCONTROL_TASK_PRIORITY, &ventcontrol_task_handle);
+
+    TaskHandle_t blink_task_handle;
+    xTaskCreate(blink_task, "Blinkhread", configMINIMAL_STACK_SIZE, &queues, BLINK_TASK_PRIORITY, &blink_task_handle);
 
     vTaskStartScheduler();
 

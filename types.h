@@ -17,6 +17,7 @@
 typedef struct SendReceiveQueues {
   QueueHandle_t receive_queue;
   QueueHandle_t send_queue;
+  QueueHandle_t blink_queue;
 } SendReceiveQueues;
 
 typedef struct message_t {

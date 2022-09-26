@@ -10,6 +10,7 @@
 #include "semphr.h"
 #include "task.h"
 #include "types.h"
+#include <time.h>
 
 #define CONNECTION_TASK_PRIORITY		( tskIDLE_PRIORITY + 1UL )
 
@@ -37,6 +38,7 @@ static void send_message(int socket, char *msg)
 static bool handle_single_command(connection_t* connection)
 {
     bool client_alive = true;
+    clock_t last_command = clock();
 
     while (client_alive)
     {
@@ -54,6 +56,8 @@ static bool handle_single_command(connection_t* connection)
             if (xQueueSend(connection->connection_receive_queue, (void *)&received_message, 10) != pdTRUE) {
                 printf("Unable to put message on receive_queue");
             }
+
+            last_command = clock();
         }
 
         //Check for messages from the connection_send_queue
@@ -72,6 +76,13 @@ static bool handle_single_command(connection_t* connection)
                 send_message(connection->sock, buffer);
             }
         }
+
+        clock_t last_command_received = (double)(clock() - last_command);// / CLOCKS_PER_SEC;
+        if (last_command_received  > 60)
+        {
+            //Close the connection when no data received in the last 60 seconds
+            return false;
+        }
     }
 
     return true;
@@ -89,6 +100,7 @@ static void do_handle_connection(void *params)
 
     closesocket(connection->sock);
     xSemaphoreGive(s_ConnectionSemaphore);
+    printf("Connection closed: %d\n", connection->sock);
     vTaskDelete(NULL);
 }
 
@@ -157,6 +169,7 @@ void server_task(void *params)
         }
         else
         {
+            printf("New connection started: %d\n", conn_sock);
             handle_connection(connection);
         }
     }

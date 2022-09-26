@@ -20,6 +20,7 @@
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
     "cortex-debug.openocdPath": "/home/koen/openocd/src/openocd",
     "files.associations": {
-        "cyw43_arch.h": "c"
+        "cyw43_arch.h": "c",
+        "type_traits": "c"
     }
 }

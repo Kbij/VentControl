@@ -12,28 +12,28 @@ void ventcontrol_task(void *params)
 {
     SendReceiveQueues queues;
     queues =  *(SendReceiveQueues*)params;
-    printf("ventcontrol_task, receive queue: %p, send queue: %p\n", queues.receive_queue, queues.send_queue);
     int current_speed = 1;
 
     while (true) {
         message_t message;
-        if (xQueueReceive(queues.receive_queue, (void *)&message, 0) == pdTRUE) {
+        if (xQueueReceive(queues.receive_queue, (void *)&message, (TickType_t) 1000) == pdTRUE) {
             printf("Message received from client: %d, type: %d\n", message.client, message.message_type);
-
-            vTaskDelay(200);
 
             if (message.message_type == MSG_SET_SPEED)
             {
                 current_speed = message.value;
+
+                //Blink the led in a different task
+                int blink_time = 200;
+                xQueueSend(queues.blink_queue, (void *)&blink_time, 10);
             }
-            
+
             message_t reply_message;
             reply_message.client = message.client;
             reply_message.message_type = MSG_CURRENT_SPEEED;
             reply_message.value = current_speed;
 
             send_queue_message(reply_message);
-            vTaskDelay(200);
         }
     }
 }
