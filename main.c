@@ -20,6 +20,7 @@ void main_task(void *params) {
     SendReceiveQueues queues;
     queues =  *(SendReceiveQueues*)params;
 
+    TaskHandle_t server_task_handle = 0;
     if (cyw43_arch_init()) {
         printf("failed to initialise\n");
         return;
@@ -30,7 +31,7 @@ void main_task(void *params) {
     int previous_link_status = cyw43_tcpip_link_status(&cyw43_state, 0);
 
     printf("Connecting to WiFi...\n");
-    if (cyw43_arch_wifi_connect_timeout_ms("MyBeer", "jolien is een trees", CYW43_AUTH_WPA2_AES_PSK, 30000)) {
+    if (cyw43_arch_wifi_connect_timeout_ms("rppico", "12345678", CYW43_AUTH_WPA2_AES_PSK, 30000)) {
         printf("failed to connect.\n");
     } else {
         printf("Connected.\n");
@@ -70,8 +71,10 @@ void main_task(void *params) {
                 {
                     printf("Link up. Starting Server.\n");
 
-                    TaskHandle_t server_task_handle;
-                    xTaskCreate(server_task, "Server", configMINIMAL_STACK_SIZE, &queues, SERVER_TASK_PRIORITY, &server_task_handle);
+                    if (server_task_handle == 0)
+                    {
+                        xTaskCreate(server_task, "Server", configMINIMAL_STACK_SIZE, &queues, SERVER_TASK_PRIORITY, &server_task_handle);
+                    }
                 }
                 break;
             }

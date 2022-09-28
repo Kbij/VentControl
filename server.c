@@ -35,17 +35,17 @@ static void send_message(int socket, char *msg)
     }
 }
 
-static bool handle_single_command(connection_t* connection)
+static void connection_loop(connection_t* connection)
 {
     bool client_alive = true;
-    clock_t last_command = clock();
+    uint64_t last_command = time_us_64();
 
     while (client_alive)
     {
         if (!receive_data(connection))
         {
             //Connection is closed
-            return false;
+            return;
         }
 
         message_t received_message;
@@ -57,7 +57,7 @@ static bool handle_single_command(connection_t* connection)
                 printf("Unable to put message on receive_queue");
             }
 
-            last_command = clock();
+            last_command = time_us_64();
         }
 
         //Check for messages from the connection_send_queue
@@ -77,30 +77,28 @@ static bool handle_single_command(connection_t* connection)
             }
         }
 
-        clock_t last_command_received = (double)(clock() - last_command);// / CLOCKS_PER_SEC;
-        if (last_command_received  > 60)
+        uint64_t now = time_us_64();
+        uint64_t last_command_received = (now - last_command);
+        if (last_command_received  > (15 * 1000 * 1000))
         {
-            //Close the connection when no data received in the last 60 seconds
-            return false;
+            printf("Closing due to timeout....\n");
+            //Close the connection when no data received in the last 15 seconds
+            return;
         }
     }
-
-    return true;
 }
 
 static void do_handle_connection(void *params)
 {
     connection_t* connection = ( connection_t* ) params;
 
-    while (!handle_single_command(connection))
-    {
-    }
-
-    remove_connection(connection);
+    connection_loop(connection);
 
     closesocket(connection->sock);
-    xSemaphoreGive(s_ConnectionSemaphore);
     printf("Connection closed: %d\n", connection->sock);
+
+    remove_connection(connection);
+    xSemaphoreGive(s_ConnectionSemaphore);
     vTaskDelete(NULL);
 }
 
