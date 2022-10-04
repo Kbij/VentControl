@@ -13,6 +13,8 @@
 #include <time.h>
 
 #define CONNECTION_TASK_PRIORITY		( tskIDLE_PRIORITY + 1UL )
+#define KEEP_ALIVE_SECONDS      10
+#define TIMEOUT_SECONDS         30
 
 const int kConnectionThreadCount = 3;
 static xSemaphoreHandle s_ConnectionSemaphore;
@@ -38,7 +40,8 @@ static void send_message(int socket, char *msg)
 static void connection_loop(connection_t* connection)
 {
     bool client_alive = true;
-    uint64_t last_command = time_us_64();
+    uint64_t last_command_received = time_us_64();
+    uint64_t last_command_send = time_us_64();
 
     while (client_alive)
     {
@@ -57,7 +60,7 @@ static void connection_loop(connection_t* connection)
                 printf("Unable to put message on receive_queue");
             }
 
-            last_command = time_us_64();
+            last_command_received = time_us_64();
         }
 
         //Check for messages from the connection_send_queue
@@ -68,21 +71,34 @@ static void connection_loop(connection_t* connection)
                 char buffer[10];
                 sprintf(buffer, "S%d#", received_message.value);
                 send_message(connection->sock, buffer);
+                last_command_send = time_us_64();
             }
             if (received_message.message_type = MSG_REMAINING_TIME)
             {
                 char buffer[10];
                 sprintf(buffer, "T%d#", received_message.value);
                 send_message(connection->sock, buffer);
+                last_command_send = time_us_64();
             }
         }
 
         uint64_t now = time_us_64();
-        uint64_t last_command_received = (now - last_command);
-        if (last_command_received  > (15 * 1000 * 1000))
+        uint64_t last_command_received_time = (now - last_command_received);
+        uint64_t last_command_send_time = (now - last_command_send);
+
+        if (last_command_send_time  > (KEEP_ALIVE_SECONDS * 1000 * 1000))
         {
-            printf("Closing due to timeout....\n");
+            printf("Sending heartbeat.\n");
+            char buffer[10];
+            sprintf(buffer, "HB#");
+            send_message(connection->sock, buffer);
+            last_command_send = time_us_64();
+        }
+
+        if (last_command_received_time  > (TIMEOUT_SECONDS * 1000 * 1000))
+        {
             //Close the connection when no data received in the last 15 seconds
+            printf("Closing due to timeout....\n");
             return;
         }
     }

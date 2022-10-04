@@ -125,6 +125,15 @@ bool handle_receive_bufffer(connection_t* connection, message_t* message)
             connection->receiveBufferPos = 0;
             return true;
         }
+        if (!strcmp(connection->receiveBuffer, "HB"))
+        {
+            message->message_type = MSG_KEEPALIVE;
+            message->client = connection->sock;
+            message->value = 0;
+
+            connection->receiveBufferPos = 0;
+            return true;
+        }
 
         //We received a end character, but did not recognise the type; reset the buffer
         connection->receiveBufferPos = 0;

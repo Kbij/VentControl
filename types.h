@@ -12,7 +12,7 @@
 #define MSG_CURRENT_SPEEED   2
 #define MSG_SET_SPEED        3
 #define MSG_REMAINING_TIME   4
-
+#define MSG_KEEPALIVE        5
 
 typedef struct SendReceiveQueues {
   QueueHandle_t receive_queue;
@@ -40,3 +40,4 @@ typedef struct connection_list_t {
 } connection_list_t;
 
 #endif /* CB8DCCC7_0E38_4AB7_BA6B_19FAF3A72F28 */
+
