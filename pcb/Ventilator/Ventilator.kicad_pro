@@ -430,6 +430,22 @@
     [
       "f0cf3880-c5c1-4665-88fb-c3bbdfffe661",
       ""
+    ],
+    [
+      "792bb004-a162-4568-97c9-870aaf9a8896",
+      "CPU"
+    ],
+    [
+      "13cf9aa6-b0da-4e46-acfd-a0914e7a0b56",
+      "Input"
+    ],
+    [
+      "ee91c44d-ed97-49a5-b7e7-a71a54706d41",
+      "Output"
+    ],
+    [
+      "90056a8c-29dd-44df-8f0f-1719a894b7ab",
+      "Power"
     ]
   ],
   "text_variables": {}

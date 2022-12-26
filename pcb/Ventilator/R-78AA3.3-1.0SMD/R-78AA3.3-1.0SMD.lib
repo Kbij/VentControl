@@ -1,0 +1,32 @@
+EESchema-LIBRARY Version 2.3
+#encoding utf-8
+#(c) SnapEDA 2016 (snapeda.com)
+#This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA) with Design Exception 1.0
+#
+# R-78AA3.3-1.0SMD
+#
+DEF R-78AA3.3-1.0SMD PS 0 40 Y Y 1 L N
+F0 "PS" -400 350 50 H V L BNN
+F1 "R-78AA3.3-1.0SMD" -400 -400 50 H V L BNN
+F2 "CONV_R-78AA3.3-1.0SMD" 0 0 50 H I L BNN
+F3 "" 0 0 50 H I L BNN
+F4 "Manufacturer Recommendations" 0 0 50 H I L BNN "STANDARD"
+F5 "9.24mm" 0 0 50 H I L BNN "MAXIMUM_PACKAGE_HEIGHT"
+F6 "RECOM" 0 0 50 H I L BNN "MANUFACTURER"
+F7 "5/2019" 0 0 50 H I L BNN "PARTREV"
+DRAW
+S -400 -300 400 300 0 0 10 f
+X +VIN 1 -600 200 200 R 40 40 0 0 I 
+X +VIN 2 -600 200 200 R 40 40 0 0 I 
+X VADJ 6 600 0 200 L 40 40 0 0 P 
+X +VOUT 4 600 200 200 L 40 40 0 0 O 
+X +VOUT 5 600 200 200 L 40 40 0 0 O 
+X GND 3 600 -200 200 L 40 40 0 0 W 
+X GND 7 600 -200 200 L 40 40 0 0 W 
+X GND 8 600 -200 200 L 40 40 0 0 W 
+X GND 9 600 -200 200 L 40 40 0 0 W 
+X CTRL 10 -600 0 200 R 40 40 0 0 I 
+ENDDRAW
+ENDDEF
+#
+# End Library
