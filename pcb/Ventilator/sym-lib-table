@@ -1,4 +1,5 @@
 (sym_lib_table
   (lib (name "Power")(type "KiCad")(uri "${KIPRJMOD}/Power.kicad_sym")(options "")(descr ""))
   (lib (name "XTal")(type "Legacy")(uri "${KIPRJMOD}/ABLS-12-000MHZ-B4-T/2022-12-26_16-57-29.lib")(options "")(descr ""))
+  (lib (name "W5500")(type "KiCad")(uri "${KIPRJMOD}/W5500/WIZ850IO.kicad_sym")(options "")(descr ""))
 )
