@@ -168,10 +168,10 @@
     (path "/792bb004-a162-4568-97c9-870aaf9a8896/cd1835a0-b5a2-4045-bc06-e387da0e4fee"
       (reference "#PWR03") (unit 1) (value "+3.3V") (footprint "")
     )
-    (path "/792bb004-a162-4568-97c9-870aaf9a8896/744acf7b-406f-4688-a0b9-bab65fbe49b5"
+    (path "/792bb004-a162-4568-97c9-870aaf9a8896/8b20e068-4a4f-40b1-baa1-bf8360ec41d9"
       (reference "#PWR04") (unit 1) (value "GND") (footprint "")
     )
-    (path "/792bb004-a162-4568-97c9-870aaf9a8896/8b20e068-4a4f-40b1-baa1-bf8360ec41d9"
+    (path "/792bb004-a162-4568-97c9-870aaf9a8896/744acf7b-406f-4688-a0b9-bab65fbe49b5"
       (reference "#PWR05") (unit 1) (value "GND") (footprint "")
     )
     (path "/792bb004-a162-4568-97c9-870aaf9a8896/5f31b26a-7f39-41b6-86b0-12d67b88e277"
@@ -345,8 +345,11 @@
     (path "/90056a8c-29dd-44df-8f0f-1719a894b7ab/a617e093-9331-45fd-85bc-c08217990433"
       (reference "J4") (unit 1) (value "Screw_Terminal_01x02") (footprint "TerminalBlock:TerminalBlock_bornier-2_P5.08mm")
     )
+    (path "/792bb004-a162-4568-97c9-870aaf9a8896/0d168a1a-aae4-4f22-ba06-a4abe647b585"
+      (reference "JP1") (unit 1) (value "SolderJumper_2_Open") (footprint "")
+    )
     (path "/792bb004-a162-4568-97c9-870aaf9a8896/309995a4-474a-4c1e-8655-cab1a85d0761"
-      (reference "JP1") (unit 1) (value "SolderJumper_3_Bridged12") (footprint "Jumper:SolderJumper-3_P1.3mm_Bridged12_Pad1.0x1.5mm")
+      (reference "JP2") (unit 1) (value "SolderJumper_3_Bridged12") (footprint "Jumper:SolderJumper-3_P1.3mm_Bridged12_Pad1.0x1.5mm")
     )
     (path "/ee91c44d-ed97-49a5-b7e7-a71a54706d41/b18ef2de-9cd5-499a-8588-a94fa47856e5"
       (reference "K1") (unit 1) (value "FINDER-40.52.7.012.0000") (footprint "Relay_THT:Relay_DPDT_Finder_40.52")
