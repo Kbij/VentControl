@@ -1,0 +1,9 @@
+[submodule "firmware/libraries/FreeRTOS-Kernel"]
+	path = firmware/libraries/FreeRTOS-Kernel
+	url = https://github.com/FreeRTOS/FreeRTOS-Kernel.git
+[submodule "firmware/libraries/ioLibrary_Driver"]
+	path = firmware/libraries/ioLibrary_Driver
+	url = https://github.com/Kbij/ioLibrary_Driver.git
+[submodule "firmware/libraries/pico-sdk"]
+	path = firmware/libraries/pico-sdk
+	url = https://github.com/raspberrypi/pico-sdk.git
