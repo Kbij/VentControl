@@ -8,6 +8,12 @@
 #include <stdint.h>
 #include <string.h>
 
+
+#define STATUS_LED  2
+#define OFF         1
+#define ON          0
+
+
 typedef struct socket_data_t
 {
     uint8_t socket_id;
@@ -28,9 +34,13 @@ void server_task(void* params)
 {
     server_data_t* server_data = (server_data_t*) params;
     socket_data_t socket_data[LISTENING_SOCKET_COUNT];
+    gpio_init(STATUS_LED);
+    gpio_set_dir(STATUS_LED, GPIO_OUT);
 
     while(true)
     {
+        gpio_put(STATUS_LED, OFF);
+
         printf("Tcp server waiting for ip...\n");
         xSemaphoreTake(server_data->ip_assigned_sem, portMAX_DELAY);
         printf("IP Assigned, starting tcp server.\n");
@@ -48,6 +58,7 @@ void server_task(void* params)
             server_loop(&socket_data[i]);
         }
 
+        gpio_put(STATUS_LED, ON);
         while(server_data->server_run)
         {
             message_t send_message;
@@ -68,6 +79,10 @@ void server_task(void* params)
                             if (send_message.message_type == MSG_CURRENT_SPEEED)
                             {
                                 socket_data[i].send_size = sprintf((char*)socket_data[i].send_buffer, "S%d#", send_message.value);
+                            }
+                            if (send_message.message_type == MSG_CURRENT_VAKANTIE)
+                            {
+                                socket_data[i].send_size = sprintf((char*)socket_data[i].send_buffer, "V%d#", send_message.value);
                             }
                             if (send_message.message_type == MSG_REMAINING_TIME)
                             {
@@ -92,15 +107,18 @@ void server_task(void* params)
 
                 server_loop(&socket_data[i]);
 
-                message_t received_message;
-                //Check for received TCP messages
-                while(handle_receive_bufffer(&socket_data[i], &received_message))
+                if (socket_data[i].socket_open)
                 {
-                    if (received_message.message_type != MSG_KEEPALIVE && received_message.message_type != NO_MESSAGE)
+                    message_t received_message;
+                    //Check for received TCP messages
+                    while(handle_receive_bufffer(&socket_data[i], &received_message))
                     {
-                        printf("Message received from tcp client: %d, message_type: %d\n", received_message.client, received_message.message_type);
-                        if (xQueueSend(server_data->receive_queue, (void *)&received_message, 10) != pdTRUE) {
-                            printf("\nUnable to put message on receive_queue\n");
+                        if (received_message.message_type != MSG_KEEPALIVE && received_message.message_type != NO_MESSAGE)
+                        {
+                            //printf("RCV, CL:%d, T: %d\n", received_message.client, received_message.message_type);
+                            if (xQueueSend(server_data->receive_queue, (void *)&received_message, 10) != pdTRUE) {
+                                printf("\nUnable to put message on receive_queue\n");
+                            }
                         }
                     }
                 }
@@ -188,12 +206,13 @@ void server_loop(socket_data_t* socket_info)
             printf("[%d]: SOCK_CLOSE_WAIT\n",socket_info->socket_id);
             ret=disconnect(socket_info->socket_id);
 
+            socket_info->socket_open = false;
+
             if(ret != SOCK_OK)
             {
                 return;
             }
 
-            socket_info->socket_open = false;
             break;
 
         case SOCK_CLOSED :
@@ -272,6 +291,24 @@ bool handle_receive_bufffer(socket_data_t* socket_info, message_t* message)
             message->value = 3;
 
             socket_info->receive_size = 0;
+            return true;
+        }
+        if (!strcmp((char*)socket_info->receive_buffer, "VAK0"))
+        {
+            message->message_type = MSG_SET_VAKANTIE;
+            message->client = socket_info->socket_id;
+            message->value = 0;
+
+            socket_info->receive_size = 0;
+            return true;
+        }
+        if (!strcmp((char*)socket_info->receive_buffer, "VAK1"))
+        {
+            message->message_type = MSG_SET_VAKANTIE;
+            message->client = socket_info->socket_id;
+            message->value = 1;
+
+            socket_info->receive_size = 1;
             return true;
         }
         if (!strcmp((char*)socket_info->receive_buffer, "HB"))

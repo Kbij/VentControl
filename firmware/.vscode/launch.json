@@ -16,7 +16,7 @@
                 "target/rp2040.cfg"
             ],
             "svdFile": "${workspaceFolder}/libraries/pico-sdk/src/rp2040/hardware_regs/rp2040.svd",
-            "runToMain": true,
+            "runToMain": false,
             // Work around for stopping at main on restart
             "postRestartCommands": [
                 "break main",

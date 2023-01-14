@@ -1,7 +1,6 @@
 #include "ventcontrol.h"
 
 #include "types.h"
-//#include "pico/cyw43_arch.h"
 #include "pico/stdlib.h"
 #include <stdio.h>
 #include "FreeRTOS.h"
@@ -9,7 +8,14 @@
 #include "queue.h"
 
 
-#define REL_1 28
+#define REL_SPEED_2 15
+#define REL_SPEED_3 14
+#define REL_VAKANTIE 7
+
+
+#define OFF 0
+#define ON 1
+#define RELAIS_SWITCH_DELAY_MS 500
 
 void ventcontrol_task(void *params)
 {
@@ -17,40 +23,89 @@ void ventcontrol_task(void *params)
     printf("Ventcontrol task started.\n");
 
     int current_speed = 1;
-    // gpio_init(REL_1);
-    // gpio_set_dir(REL_1, GPIO_OUT);
+    bool current_vakantie = false;
+    gpio_init(REL_SPEED_2);
+    gpio_set_dir(REL_SPEED_2, GPIO_OUT);
+    gpio_init(REL_SPEED_3);
+    gpio_set_dir(REL_SPEED_3, GPIO_OUT);
+    gpio_init(REL_VAKANTIE);
+    gpio_set_dir(REL_VAKANTIE, GPIO_OUT);
+
+    gpio_put(REL_SPEED_2, OFF);
+    gpio_put(REL_SPEED_3, OFF);
+    gpio_put(REL_VAKANTIE, OFF);
+
 
     while (true) {
         message_t message;
         if (xQueueReceive(server_data->receive_queue, (void *)&message, (TickType_t) 1000) == pdTRUE)
         {
-            printf("Processing message received from client: %d, type: %d\n", message.client, message.message_type);
+         //   printf("PR, CL: %d, T: %d\n", message.client, message.message_type);
 
             if (message.message_type == MSG_SET_SPEED)
             {
                 current_speed = message.value;
-
+                printf("SP: %d\n", current_speed);
                 if (current_speed == 1)
                 {
-//                    gpio_put(REL_1, 1);
+                    gpio_put(REL_SPEED_2, OFF);
+                    gpio_put(REL_SPEED_3, OFF);
                 }
-                else
+
+                if (current_speed == 2)
                 {
-//                    gpio_put(REL_1, 0);
+                    gpio_put(REL_SPEED_3, OFF);
+                    vTaskDelay(RELAIS_SWITCH_DELAY_MS/ portTICK_PERIOD_MS);
+                    gpio_put(REL_SPEED_2, ON);
                 }
+
+                if (current_speed == 3)
+                {
+                    gpio_put(REL_SPEED_2, OFF);
+                    vTaskDelay(RELAIS_SWITCH_DELAY_MS/ portTICK_PERIOD_MS);
+                    gpio_put(REL_SPEED_3, ON);
+                }
+
+                message_t reply_message;
+                reply_message.client = message.client;
+                reply_message.message_type = MSG_CURRENT_SPEEED;
+                reply_message.value = current_speed;
+
+                xQueueSend(server_data->send_queue, (void *)&reply_message, 10);
 
                 // //Blink the led in a different task
                 // int blink_time = 200;
                 // xQueueSend(queues.blink_queue, (void *)&blink_time, 10);
             }
 
-            message_t reply_message;
-            reply_message.client = message.client;
-            reply_message.message_type = MSG_CURRENT_SPEEED;
-            reply_message.value = current_speed;
+            if (message.message_type == MSG_SET_VAKANTIE)
+            {
+                current_vakantie = message.value > 0 ? true : false;
+                printf("VAK: %s\n", current_vakantie ? "true" : "false");
 
-            xQueueSend(server_data->send_queue, (void *)&reply_message, 10);
+                gpio_put(REL_VAKANTIE, message.value);
 
+                message_t reply_message;
+                reply_message.client = message.client;
+                reply_message.message_type = MSG_CURRENT_VAKANTIE;
+                reply_message.value = current_vakantie;
+
+                xQueueSend(server_data->send_queue, (void *)&reply_message, 10);
+            }
+
+            if (message.message_type == MSG_GET_STATUS)
+            {
+                message_t reply_message;
+                reply_message.client = message.client;
+                reply_message.message_type = MSG_CURRENT_SPEEED;
+                reply_message.value = current_speed;
+                xQueueSend(server_data->send_queue, (void *)&reply_message, 10);
+
+                reply_message.client = message.client;
+                reply_message.message_type = MSG_CURRENT_VAKANTIE;
+                reply_message.value = current_vakantie;
+                xQueueSend(server_data->send_queue, (void *)&reply_message, 10);
+            }
         }
     }
 }

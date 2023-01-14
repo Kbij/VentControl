@@ -12,9 +12,11 @@
 #define NO_MESSAGE           0
 #define MSG_GET_STATUS       1
 #define MSG_CURRENT_SPEEED   2
-#define MSG_SET_SPEED        3
-#define MSG_REMAINING_TIME   4
-#define MSG_KEEPALIVE        5
+#define MSG_CURRENT_VAKANTIE 3
+#define MSG_SET_SPEED        4
+#define MSG_SET_VAKANTIE     5
+#define MSG_REMAINING_TIME   6
+#define MSG_KEEPALIVE        7
 
 typedef struct server_data_t
 {
