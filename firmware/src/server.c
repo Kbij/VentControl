@@ -204,8 +204,7 @@ void server_loop(socket_data_t* socket_info)
 
         case SOCK_CLOSE_WAIT :
             printf("[%d]: SOCK_CLOSE_WAIT\n",socket_info->socket_id);
-            ret=disconnect(socket_info->socket_id);
-
+            ret = close(socket_info->socket_id);
             socket_info->socket_open = false;
 
             if(ret != SOCK_OK)

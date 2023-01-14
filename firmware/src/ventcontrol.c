@@ -83,7 +83,7 @@ void ventcontrol_task(void *params)
                 current_vakantie = message.value > 0 ? true : false;
                 printf("VAK: %s\n", current_vakantie ? "true" : "false");
 
-                gpio_put(REL_VAKANTIE, message.value);
+                gpio_put(REL_VAKANTIE, current_vakantie);
 
                 message_t reply_message;
                 reply_message.client = message.client;
