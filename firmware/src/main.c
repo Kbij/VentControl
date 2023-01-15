@@ -9,26 +9,24 @@
  * Includes
  * ----------------------------------------------------------------------------------------------------
  */
+#include "server.h"
+#include "input.h"
+#include "main.h"
+#include "ventcontrol.h"
+#include "types.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include "pico/stdlib.h"
 #include <string.h>
 #include "pico/unique_id.h"
-#include "server.h"
 #include <FreeRTOS.h>
 #include <task.h>
 #include <semphr.h>
 #include "queue.h"
-
 #include "port_common.h"
-
 #include "wizchip_conf.h"
 #include "w5x00_spi.h"
-
 #include "dhcp.h"
-#include "main.h"
-#include "ventcontrol.h"
-#include "types.h"
 #include "timer.h"
 
 /**
@@ -150,6 +148,8 @@ int main()
     xTaskCreate(dhcp_task, "DHCP_Task", DHCP_TASK_STACK_SIZE, &server_data, DHCP_TASK_PRIORITY, NULL);
     xTaskCreate(server_task, "Server_TASK", SERVER_TASK_STACK_SIZE, &server_data, SERVER_TASK_PRIORITY, NULL);
     xTaskCreate(ventcontrol_task, "Ventcontrol_TASK", SERVER_TASK_STACK_SIZE, &server_data, SERVER_TASK_PRIORITY, NULL);
+    xTaskCreate(ventcontrol_task, "Ventcontrol_TASK", SERVER_TASK_STACK_SIZE, &server_data, SERVER_TASK_PRIORITY, NULL);
+    xTaskCreate(input_task, "Input_TASK", SERVER_TASK_STACK_SIZE, &server_data, SERVER_TASK_PRIORITY, NULL);
 
     vTaskStartScheduler();
 

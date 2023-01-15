@@ -10,7 +10,7 @@
 #define INPUT_2 4
 #define INPUT_3 5
 #define INPUT_4 6
-#define INPUT_DELAY_MS  5 * 60 * 1000
+#define INPUT_DELAY_MS  (2 * 1000)
 
 void handle_inputs(QueueHandle_t input_queue, int input_gpio, int input_id, int* active_time_ms, bool* input_state);
 
@@ -46,23 +46,27 @@ void handle_inputs(QueueHandle_t input_queue, int input_gpio, int input_id, int*
         (*active_time_ms) += INPUT_READ_DELAY_MS;
         if (((*active_time_ms) > INPUT_DELAY_MS) && !(*input_state))
         {
+            printf("high: %d\n", input_gpio);
+
             (*input_state) = true;
 
-            input_state_t input_state;
-            input_state.input = 1;
-            input_state.state = true;
-            xQueueSend(input_queue, (void *)&input_state, 10);
+            input_state_t input_state_msg;
+            input_state_msg.input = 1;
+            input_state_msg.state = true;
+            xQueueSend(input_queue, (void *)&input_state_msg, 10);
         }
     }
     else
     {
-        if (input_state[1])
+        (*active_time_ms) = 0;
+        if ((*input_state))
         {
-            input_state[1] = false;
-            input_state_t input_state;
-            input_state.input = 1;
-            input_state.state = false;
-            xQueueSend(input_queue, (void *)&input_state, 10);
+            printf("low: %d\n", input_gpio);
+            (*input_state) = false;
+            input_state_t input_state_msg;
+            input_state_msg.input = 1;
+            input_state_msg.state = false;
+            xQueueSend(input_queue, (void *)&input_state_msg, 10);
         }
     }
 }
