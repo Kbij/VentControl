@@ -8,6 +8,6 @@
 #define TIMEOUT_SECONDS         30
 
 
-void server_task(void* argument);
+void server_task(void* params);
 
 #endif /* B05D9526_ED76_4381_A517_160F0993D8C9 */

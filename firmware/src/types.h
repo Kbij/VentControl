@@ -25,6 +25,7 @@ typedef struct server_data_t
   QueueHandle_t receive_queue;
   QueueHandle_t send_queue;
   QueueHandle_t blink_queue;
+  QueueHandle_t input_queue;
 } server_data_t;
 
 typedef struct message_t {
@@ -32,5 +33,11 @@ typedef struct message_t {
   int value;
   int message_type;
 } message_t;
+
+typedef struct input_state_t
+{
+  uint8_t input;
+  bool state;
+} input_state_t;
 
 #endif /* B0B500A7_6A18_4F4B_9AF0_44F78775ED2E */

@@ -38,7 +38,7 @@ void ventcontrol_task(void *params)
 
     while (true) {
         message_t message;
-        if (xQueueReceive(server_data->receive_queue, (void *)&message, (TickType_t) 1000) == pdTRUE)
+        if (xQueueReceive(server_data->receive_queue, (void *)&message, (TickType_t) 500) == pdTRUE)
         {
          //   printf("PR, CL: %d, T: %d\n", message.client, message.message_type);
 
@@ -106,6 +106,11 @@ void ventcontrol_task(void *params)
                 reply_message.value = current_vakantie;
                 xQueueSend(server_data->send_queue, (void *)&reply_message, 10);
             }
+        }
+
+        int input;
+        if (xQueueReceive(server_data->input_queue, (void *)&input, (TickType_t) 500) == pdTRUE)
+        {
         }
     }
 }

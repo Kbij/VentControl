@@ -69,7 +69,7 @@ add_compile_options(
         -Wno-maybe-uninitialized
         )
 
-add_executable(${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/src/main.c ${CMAKE_SOURCE_DIR}/src/server.c ${CMAKE_SOURCE_DIR}/src/ventcontrol.c)
+add_executable(${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/src/main.c ${CMAKE_SOURCE_DIR}/src/server.c ${CMAKE_SOURCE_DIR}/src/ventcontrol.c ${CMAKE_SOURCE_DIR}/src/input.c)
 # target_include_directories(${PROJECT_NAME} PRIVATE
 #     ${CMAKE_CURRENT_LIST_DIR}
 # )
