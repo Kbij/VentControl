@@ -142,7 +142,7 @@ int main()
     server_data.receive_queue = xQueueCreate(MAX_QUEUE_LENGTH, sizeof(message_t));
     server_data.send_queue = xQueueCreate(MAX_QUEUE_LENGTH, sizeof(message_t));
     server_data.blink_queue = xQueueCreate(MAX_QUEUE_LENGTH, sizeof(int));
-    server_data.input_queue = xQueueCreate(MAX_QUEUE_LENGTH, sizeof(input_state_t));
+    server_data.input_queue = xQueueCreate(MAX_QUEUE_LENGTH, sizeof(bool));
 
     printf("Creating task ....\n");
     xTaskCreate(dhcp_task, "DHCP_Task", DHCP_TASK_STACK_SIZE, &server_data, DHCP_TASK_PRIORITY, NULL);

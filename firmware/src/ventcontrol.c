@@ -13,9 +13,11 @@
 #define REL_VAKANTIE 7
 
 
-#define OFF 0
-#define ON 1
+#define OFF      0
+#define ON       1
 #define RELAIS_SWITCH_DELAY_MS 500
+#define BOOST_SPEED 2
+#define NORMAL_SPEED 1
 
 void ventcontrol_task(void *params)
 {
@@ -38,41 +40,45 @@ void ventcontrol_task(void *params)
 
     while (true) {
         message_t message;
+        bool boost;
         if (xQueueReceive(server_data->receive_queue, (void *)&message, (TickType_t) 500) == pdTRUE)
         {
          //   printf("PR, CL: %d, T: %d\n", message.client, message.message_type);
 
             if (message.message_type == MSG_SET_SPEED)
             {
-                current_speed = message.value;
-                printf("SP: %d\n", current_speed);
-                if (current_speed == 1)
+                if (current_speed != message.value)
                 {
-                    gpio_put(REL_SPEED_2, OFF);
-                    gpio_put(REL_SPEED_3, OFF);
+                    boost = false;
+                    current_speed = message.value;
+                    printf("SP: %d\n", current_speed);
+                    if (current_speed == 1)
+                    {
+                        gpio_put(REL_SPEED_2, OFF);
+                        gpio_put(REL_SPEED_3, OFF);
+                    }
+
+                    if (current_speed == 2)
+                    {
+                        gpio_put(REL_SPEED_3, OFF);
+                        vTaskDelay(RELAIS_SWITCH_DELAY_MS/ portTICK_PERIOD_MS);
+                        gpio_put(REL_SPEED_2, ON);
+                    }
+
+                    if (current_speed == 3)
+                    {
+                        gpio_put(REL_SPEED_2, OFF);
+                        vTaskDelay(RELAIS_SWITCH_DELAY_MS/ portTICK_PERIOD_MS);
+                        gpio_put(REL_SPEED_3, ON);
+                    }
+
+                    message_t reply_message;
+                    reply_message.client = message.client;
+                    reply_message.message_type = MSG_CURRENT_SPEEED;
+                    reply_message.value = current_speed;
+
+                    xQueueSend(server_data->send_queue, (void *)&reply_message, 10);
                 }
-
-                if (current_speed == 2)
-                {
-                    gpio_put(REL_SPEED_3, OFF);
-                    vTaskDelay(RELAIS_SWITCH_DELAY_MS/ portTICK_PERIOD_MS);
-                    gpio_put(REL_SPEED_2, ON);
-                }
-
-                if (current_speed == 3)
-                {
-                    gpio_put(REL_SPEED_2, OFF);
-                    vTaskDelay(RELAIS_SWITCH_DELAY_MS/ portTICK_PERIOD_MS);
-                    gpio_put(REL_SPEED_3, ON);
-                }
-
-                message_t reply_message;
-                reply_message.client = message.client;
-                reply_message.message_type = MSG_CURRENT_SPEEED;
-                reply_message.value = current_speed;
-
-                xQueueSend(server_data->send_queue, (void *)&reply_message, 10);
-
                 // //Blink the led in a different task
                 // int blink_time = 200;
                 // xQueueSend(queues.blink_queue, (void *)&blink_time, 10);
@@ -108,9 +114,22 @@ void ventcontrol_task(void *params)
             }
         }
 
-        int input;
-        if (xQueueReceive(server_data->input_queue, (void *)&input, (TickType_t) 500) == pdTRUE)
+        if (xQueueReceive(server_data->input_queue, (void *)&boost, (TickType_t) 500) == pdTRUE)
         {
+            if (boost && (current_speed != BOOST_SPEED))
+            {
+                current_speed = BOOST_SPEED;
+                gpio_put(REL_SPEED_3, OFF);
+                vTaskDelay(RELAIS_SWITCH_DELAY_MS/ portTICK_PERIOD_MS);
+                gpio_put(REL_SPEED_2, ON);
+            }
+
+            if (!boost && (current_speed != NORMAL_SPEED))
+            {
+                current_speed = NORMAL_SPEED;
+                gpio_put(REL_SPEED_2, OFF);
+                gpio_put(REL_SPEED_3, OFF);
+            }
         }
     }
 }
