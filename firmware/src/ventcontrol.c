@@ -122,6 +122,12 @@ void ventcontrol_task(void *params)
                 gpio_put(REL_SPEED_3, OFF);
                 vTaskDelay(RELAIS_SWITCH_DELAY_MS/ portTICK_PERIOD_MS);
                 gpio_put(REL_SPEED_2, ON);
+
+                message_t reply_message;
+                reply_message.client = -1;
+                reply_message.message_type = MSG_CURRENT_SPEEED;
+                reply_message.value = current_speed;
+                xQueueSend(server_data->send_queue, (void *)&reply_message, 10);
             }
 
             if (!boost && (current_speed != NORMAL_SPEED))
@@ -129,6 +135,12 @@ void ventcontrol_task(void *params)
                 current_speed = NORMAL_SPEED;
                 gpio_put(REL_SPEED_2, OFF);
                 gpio_put(REL_SPEED_3, OFF);
+
+                message_t reply_message;
+                reply_message.client = -1;
+                reply_message.message_type = MSG_CURRENT_SPEEED;
+                reply_message.value = current_speed;
+                xQueueSend(server_data->send_queue, (void *)&reply_message, 10);
             }
         }
     }

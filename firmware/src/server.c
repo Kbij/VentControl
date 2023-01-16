@@ -71,8 +71,8 @@ void server_task(void* params)
                 //If the socket is open, check if we need to send a command or heartbeat
                 if (socket_data[i].socket_open)
                 {
-                    //If the message is for this socket
-                    if (send_message.client == socket_data[i].socket_id)
+                    //If the message is for this socket or a broadcast message
+                    if (send_message.client == socket_data[i].socket_id || send_message.client == -1)
                     {
                         if (send_message.message_type != NO_MESSAGE)
                         {
