@@ -24,8 +24,6 @@ void ventcontrol_task(void *params)
     server_data_t* server_data = (server_data_t*) params;
     printf("Ventcontrol task started.\n");
 
-    int current_speed = 1;
-    bool current_vakantie = false;
     gpio_init(REL_SPEED_2);
     gpio_set_dir(REL_SPEED_2, GPIO_OUT);
     gpio_init(REL_SPEED_3);
@@ -37,7 +35,10 @@ void ventcontrol_task(void *params)
     gpio_put(REL_SPEED_3, OFF);
     gpio_put(REL_VAKANTIE, OFF);
 
-
+    bool currentVakantie = false;
+    int actualSpeed = 0;
+    int requestedSpeed = 1;
+    int boostSpeed = 1;
     while (true) {
         message_t message;
         bool boost;
@@ -47,37 +48,13 @@ void ventcontrol_task(void *params)
 
             if (message.message_type == MSG_SET_SPEED)
             {
-                if (current_speed != message.value)
+                if (requestedSpeed != message.value)
                 {
                     boost = false;
-                    current_speed = message.value;
-                    printf("SP: %d\n", current_speed);
-                    if (current_speed == 1)
-                    {
-                        gpio_put(REL_SPEED_2, OFF);
-                        gpio_put(REL_SPEED_3, OFF);
-                    }
-
-                    if (current_speed == 2)
-                    {
-                        gpio_put(REL_SPEED_3, OFF);
-                        vTaskDelay(RELAIS_SWITCH_DELAY_MS/ portTICK_PERIOD_MS);
-                        gpio_put(REL_SPEED_2, ON);
-                    }
-
-                    if (current_speed == 3)
-                    {
-                        gpio_put(REL_SPEED_2, OFF);
-                        vTaskDelay(RELAIS_SWITCH_DELAY_MS/ portTICK_PERIOD_MS);
-                        gpio_put(REL_SPEED_3, ON);
-                    }
-
-                    message_t reply_message;
-                    reply_message.client = message.client;
-                    reply_message.message_type = MSG_CURRENT_SPEEED;
-                    reply_message.value = current_speed;
-
-                    xQueueSend(server_data->send_queue, (void *)&reply_message, 10);
+                    requestedSpeed = message.value;
+                    //Reset the boostSpeed also
+                    boostSpeed = requestedSpeed;
+                    printf("SP: %d\n", requestedSpeed);
                 }
                 // //Blink the led in a different task
                 // int blink_time = 200;
@@ -86,62 +63,69 @@ void ventcontrol_task(void *params)
 
             if (message.message_type == MSG_SET_VAKANTIE)
             {
-                current_vakantie = message.value > 0 ? true : false;
-                printf("VAK: %s\n", current_vakantie ? "true" : "false");
+                currentVakantie = message.value > 0 ? true : false;
+                printf("VAK: %s\n", currentVakantie ? "true" : "false");
 
-                gpio_put(REL_VAKANTIE, current_vakantie);
+                gpio_put(REL_VAKANTIE, currentVakantie);
 
                 message_t reply_message;
                 reply_message.client = message.client;
                 reply_message.message_type = MSG_CURRENT_VAKANTIE;
-                reply_message.value = current_vakantie;
+                reply_message.value = currentVakantie;
 
                 xQueueSend(server_data->send_queue, (void *)&reply_message, 10);
             }
 
             if (message.message_type == MSG_GET_STATUS)
             {
+                printf("get status, SP: %d, VK: %s\n", actualSpeed, currentVakantie ? "true" : "false");
                 message_t reply_message;
                 reply_message.client = message.client;
                 reply_message.message_type = MSG_CURRENT_SPEEED;
-                reply_message.value = current_speed;
+                reply_message.value = actualSpeed;
                 xQueueSend(server_data->send_queue, (void *)&reply_message, 10);
 
                 reply_message.client = message.client;
                 reply_message.message_type = MSG_CURRENT_VAKANTIE;
-                reply_message.value = current_vakantie;
+                reply_message.value = currentVakantie;
                 xQueueSend(server_data->send_queue, (void *)&reply_message, 10);
             }
         }
 
         if (xQueueReceive(server_data->input_queue, (void *)&boost, (TickType_t) 500) == pdTRUE)
         {
-            if (boost && (current_speed != BOOST_SPEED))
-            {
-                current_speed = BOOST_SPEED;
-                gpio_put(REL_SPEED_3, OFF);
-                vTaskDelay(RELAIS_SWITCH_DELAY_MS/ portTICK_PERIOD_MS);
-                gpio_put(REL_SPEED_2, ON);
+            boostSpeed = boost ? BOOST_SPEED : NORMAL_SPEED;
+        }
 
+        int wantedSpeed = boostSpeed > requestedSpeed ? boostSpeed : requestedSpeed;
+        if (wantedSpeed != actualSpeed)
+        {
+                if (wantedSpeed == 1)
+                {
+                    gpio_put(REL_SPEED_2, OFF);
+                    gpio_put(REL_SPEED_3, OFF);
+                }
+
+                if (wantedSpeed == 2)
+                {
+                    gpio_put(REL_SPEED_3, OFF);
+                    vTaskDelay(RELAIS_SWITCH_DELAY_MS/ portTICK_PERIOD_MS);
+                    gpio_put(REL_SPEED_2, ON);
+                }
+
+                if (wantedSpeed == 3)
+                {
+                    gpio_put(REL_SPEED_2, OFF);
+                    vTaskDelay(RELAIS_SWITCH_DELAY_MS/ portTICK_PERIOD_MS);
+                    gpio_put(REL_SPEED_3, ON);
+                }
+
+                actualSpeed = wantedSpeed;
                 message_t reply_message;
-                reply_message.client = -1;
+                reply_message.client = message.client;
                 reply_message.message_type = MSG_CURRENT_SPEEED;
-                reply_message.value = current_speed;
+                reply_message.value = actualSpeed;
                 xQueueSend(server_data->send_queue, (void *)&reply_message, 10);
-            }
-
-            if (!boost && (current_speed != NORMAL_SPEED))
-            {
-                current_speed = NORMAL_SPEED;
-                gpio_put(REL_SPEED_2, OFF);
-                gpio_put(REL_SPEED_3, OFF);
-
-                message_t reply_message;
-                reply_message.client = -1;
-                reply_message.message_type = MSG_CURRENT_SPEEED;
-                reply_message.value = current_speed;
-                xQueueSend(server_data->send_queue, (void *)&reply_message, 10);
-            }
         }
     }
 }
