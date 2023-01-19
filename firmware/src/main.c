@@ -148,7 +148,6 @@ int main()
     xTaskCreate(dhcp_task, "DHCP_Task", DHCP_TASK_STACK_SIZE, &server_data, DHCP_TASK_PRIORITY, NULL);
     xTaskCreate(server_task, "Server_TASK", SERVER_TASK_STACK_SIZE, &server_data, SERVER_TASK_PRIORITY, NULL);
     xTaskCreate(ventcontrol_task, "Ventcontrol_TASK", SERVER_TASK_STACK_SIZE, &server_data, SERVER_TASK_PRIORITY, NULL);
-    xTaskCreate(ventcontrol_task, "Ventcontrol_TASK", SERVER_TASK_STACK_SIZE, &server_data, SERVER_TASK_PRIORITY, NULL);
     xTaskCreate(input_task, "Input_TASK", SERVER_TASK_STACK_SIZE, &server_data, SERVER_TASK_PRIORITY, NULL);
 
     vTaskStartScheduler();
