@@ -10,8 +10,8 @@
 #define INPUT_2 4
 #define INPUT_3 5
 #define INPUT_4 6
-#define INPUT_DELAY_MS  (2 * 1000)
-#define BOOST_DELAY_MS ( 5 * 1000)
+#define INPUT_DELAY_MS  (3 * 60 * 1000)
+#define BOOST_DELAY_MS  (5 * 60 * 1000)
 
 void handle_inputs(int input_gpio, int input_id, int* active_time_ms, bool* input_state);
 
