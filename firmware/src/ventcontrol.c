@@ -121,8 +121,9 @@ void ventcontrol_task(void *params)
                 }
 
                 actualSpeed = wantedSpeed;
+                printf("actualSpeed: %d\n", actualSpeed);
                 message_t reply_message;
-                reply_message.client = message.client;
+                reply_message.client = -1; //Send to all clients
                 reply_message.message_type = MSG_CURRENT_SPEEED;
                 reply_message.value = actualSpeed;
                 xQueueSend(server_data->send_queue, (void *)&reply_message, 10);
