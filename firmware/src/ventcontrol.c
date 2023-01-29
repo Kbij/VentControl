@@ -78,7 +78,6 @@ void ventcontrol_task(void *params)
 
             if (message.message_type == MSG_GET_STATUS)
             {
-                printf("get status, SP: %d, VK: %s\n", actualSpeed, currentVakantie ? "true" : "false");
                 message_t reply_message;
                 reply_message.client = message.client;
                 reply_message.message_type = MSG_CURRENT_SPEEED;
@@ -121,7 +120,6 @@ void ventcontrol_task(void *params)
                 }
 
                 actualSpeed = wantedSpeed;
-                printf("actualSpeed: %d\n", actualSpeed);
                 message_t reply_message;
                 reply_message.client = -1; //Send to all clients
                 reply_message.message_type = MSG_CURRENT_SPEEED;

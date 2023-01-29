@@ -6,7 +6,7 @@
 #include "semphr.h"
 
 #define MAX_CONN             5
-#define MAX_QUEUE_LENGTH     10
+#define MAX_QUEUE_LENGTH     100
 #define BUFFER_SIZE          128
 
 #define NO_MESSAGE           0

@@ -78,7 +78,6 @@ void server_task(void* params)
                         {
                             if (send_message.message_type == MSG_CURRENT_SPEEED)
                             {
-                                printf("SendSP: %d\n", send_message.value);
                                 socket_data[i].send_size = sprintf((char*)socket_data[i].send_buffer, "S%d#", send_message.value);
                             }
                             if (send_message.message_type == MSG_CURRENT_VAKANTIE)
@@ -100,7 +99,7 @@ void server_task(void* params)
 
                         if (last_command_send_time  > (KEEP_ALIVE_SECONDS * 1000 * 1000))
                         {
-                            printf("[%d]: Sending heartbeat.\n",socket_data[i].socket_id);
+                            printf("[%d]: Send HB.\n",socket_data[i].socket_id);
                             socket_data[i].send_size = sprintf((char*)socket_data[i].send_buffer, "HB#", send_message.value);
                         }
                     }
