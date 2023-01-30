@@ -3,4 +3,5 @@
   (lib (name "ABLS-12.000MHZ-B4-T")(type "Legacy")(uri "${KIPRJMOD}/ABLS-12-000MHZ-B4-T/footprints.pretty/ABLS-12.000MHZ-B4-T.kicad_mod")(options "")(descr "")(disabled))
   (lib (name "Xtal")(type "KiCad")(uri "${KIPRJMOD}/ABLS-12-000MHZ-B4-T/footprints.pretty")(options "")(descr ""))
   (lib (name "W5500")(type "KiCad")(uri "${KIPRJMOD}/W5500")(options "")(descr ""))
+  (lib (name "IM06GR")(type "KiCad")(uri "${KIPRJMOD}/IM06GR-Relais/footprints.pretty")(options "")(descr ""))
 )

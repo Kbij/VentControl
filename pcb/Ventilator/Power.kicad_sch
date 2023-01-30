@@ -459,7 +459,6 @@
     )
   )
 
-
   (junction (at 115.57 81.28) (diameter 0) (color 0 0 0 0)
     (uuid 00524a37-7893-498e-a1ff-5b30fe960406)
   )
@@ -718,7 +717,7 @@
   (symbol (lib_id "Connector:Screw_Terminal_01x02") (at 48.26 83.82 180) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid a617e093-9331-45fd-85bc-c08217990433)
-    (property "Reference" "J4" (id 0) (at 48.26 74.93 0))
+    (property "Reference" "J5" (id 0) (at 48.26 74.93 0))
     (property "Value" "Screw_Terminal_01x02" (id 1) (at 48.26 77.47 0))
     (property "Footprint" "TerminalBlock:TerminalBlock_bornier-2_P5.08mm" (id 2) (at 48.26 83.82 0)
       (effects (font (size 1.27 1.27)) hide)
@@ -751,7 +750,7 @@
     (uuid c5e05feb-f5a7-4b7c-aa47-0cef025944cd)
     (property "Reference" "D12" (id 0) (at 65.0875 74.93 0))
     (property "Value" "BAT760,115" (id 1) (at 65.0875 77.47 0))
-    (property "Footprint" "Diode_SMD:D_SOD-323_HandSoldering" (id 2) (at 64.77 81.28 0)
+    (property "Footprint" "Diode_SMD:D_SMF" (id 2) (at 64.77 81.28 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 64.77 81.28 0)

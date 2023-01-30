@@ -328,7 +328,7 @@
       (reference "D11") (unit 1) (value "LED") (footprint "LED_THT:LED_D3.0mm")
     )
     (path "/90056a8c-29dd-44df-8f0f-1719a894b7ab/c5e05feb-f5a7-4b7c-aa47-0cef025944cd"
-      (reference "D12") (unit 1) (value "BAT760,115") (footprint "Diode_SMD:D_SOD-323_HandSoldering")
+      (reference "D12") (unit 1) (value "BAT760,115") (footprint "Diode_SMD:D_SMF")
     )
     (path "/792bb004-a162-4568-97c9-870aaf9a8896/819133f3-9c3f-43ea-a090-588faa38be78"
       (reference "H1") (unit 1) (value "WIZ850IO") (footprint "W5500:WIZ850IO")
@@ -339,26 +339,23 @@
     (path "/13cf9aa6-b0da-4e46-acfd-a0914e7a0b56/d2e373dc-a047-4fd9-a091-e0bf1d36e6a1"
       (reference "J2") (unit 1) (value "Screw_Terminal_01x08") (footprint "TerminalBlock_Phoenix:TerminalBlock_Phoenix_MKDS-1,5-8_1x08_P5.00mm_Horizontal")
     )
-    (path "/ee91c44d-ed97-49a5-b7e7-a71a54706d41/ef23dad5-2156-47bd-af2d-c99effb0b74c"
-      (reference "J3") (unit 1) (value "Screw_Terminal_01x08") (footprint "TerminalBlock_Phoenix:TerminalBlock_Phoenix_MKDS-1,5-8_1x08_P5.00mm_Horizontal")
+    (path "/ee91c44d-ed97-49a5-b7e7-a71a54706d41/7b7030b6-9baa-4160-88d9-1f9b320094c3"
+      (reference "J3") (unit 1) (value "Screw_Terminal_01x02") (footprint "TerminalBlock_Phoenix:TerminalBlock_Phoenix_MKDS-1,5-2-5.08_1x02_P5.08mm_Horizontal")
+    )
+    (path "/ee91c44d-ed97-49a5-b7e7-a71a54706d41/029ce7c7-01cb-4ca2-8bdd-7573bf8543ab"
+      (reference "J4") (unit 1) (value "Screw_Terminal_01x03") (footprint "TerminalBlock_Phoenix:TerminalBlock_Phoenix_MKDS-1,5-3-5.08_1x03_P5.08mm_Horizontal")
     )
     (path "/90056a8c-29dd-44df-8f0f-1719a894b7ab/a617e093-9331-45fd-85bc-c08217990433"
-      (reference "J4") (unit 1) (value "Screw_Terminal_01x02") (footprint "TerminalBlock:TerminalBlock_bornier-2_P5.08mm")
+      (reference "J5") (unit 1) (value "Screw_Terminal_01x02") (footprint "TerminalBlock:TerminalBlock_bornier-2_P5.08mm")
     )
     (path "/792bb004-a162-4568-97c9-870aaf9a8896/0d168a1a-aae4-4f22-ba06-a4abe647b585"
       (reference "JP1") (unit 1) (value "SolderJumper_2_Open") (footprint "")
     )
-    (path "/792bb004-a162-4568-97c9-870aaf9a8896/309995a4-474a-4c1e-8655-cab1a85d0761"
-      (reference "JP2") (unit 1) (value "SolderJumper_3_Bridged12") (footprint "Jumper:SolderJumper-3_P1.3mm_Bridged12_Pad1.0x1.5mm")
-    )
-    (path "/ee91c44d-ed97-49a5-b7e7-a71a54706d41/b18ef2de-9cd5-499a-8588-a94fa47856e5"
+    (path "/ee91c44d-ed97-49a5-b7e7-a71a54706d41/f696b5aa-b32c-4865-8d2f-2bb048933129"
       (reference "K1") (unit 1) (value "FINDER-40.52.7.012.0000") (footprint "Relay_THT:Relay_DPDT_Finder_40.52")
     )
-    (path "/ee91c44d-ed97-49a5-b7e7-a71a54706d41/f696b5aa-b32c-4865-8d2f-2bb048933129"
-      (reference "K2") (unit 1) (value "FINDER-40.52.7.012.0000") (footprint "Relay_THT:Relay_DPDT_Finder_40.52")
-    )
     (path "/ee91c44d-ed97-49a5-b7e7-a71a54706d41/697c914d-ec6f-4d42-97c3-aad84db1b1d9"
-      (reference "K3") (unit 1) (value "FINDER-40.52.7.012.0000") (footprint "Relay_THT:Relay_DPDT_Finder_40.52")
+      (reference "K2") (unit 1) (value "FINDER-40.52.7.012.0000") (footprint "Relay_THT:Relay_DPDT_Finder_40.52")
     )
     (path "/90056a8c-29dd-44df-8f0f-1719a894b7ab/66ba8c3a-86b3-44e6-91a0-7e97c5a6091f"
       (reference "PS1") (unit 1) (value "R-78AA5.0-0.5SMD-R") (footprint "R-78AA3.3-1:CONV_R-78AA3.3-1.0SMD")
@@ -503,6 +500,9 @@
     )
     (path "/13cf9aa6-b0da-4e46-acfd-a0914e7a0b56/f9f29a8c-8fbe-4d2d-9487-0ab628a3f6b8"
       (reference "U5") (unit 1) (value "4N25") (footprint "Package_DIP:DIP-6_W7.62mm")
+    )
+    (path "/ee91c44d-ed97-49a5-b7e7-a71a54706d41/56bc4ee1-b336-4fe4-9ed9-03a0ca486e2f"
+      (reference "U6") (unit 1) (value "IM06GR") (footprint "IM06GR:IM06GR")
     )
   )
 )

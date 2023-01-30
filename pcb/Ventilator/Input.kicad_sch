@@ -1282,11 +1282,6 @@
     (uuid fee6bb07-beda-4b37-8f27-1d89cb106b6e)
   )
 
-  (text "470k: Zou beter groter (thru hole) zijn (230v)" (at 54.61 16.51 0)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid 55de22db-6ee6-4fcb-afa0-ed07d0c0ae06)
-  )
-
   (label "SCT7" (at 172.72 92.71 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 03bfe090-df38-4b84-b8e1-4a162d6c5e7c)

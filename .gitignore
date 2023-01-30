@@ -1,3 +1,7 @@
 build
 .vscode
 /pcb/Ventilator/#auto_saved_files#
+/firmwareTest/FirmwareTest/.vs
+/firmwareTest/FirmwareTest/FirmwareTest/bin
+/firmwareTest/FirmwareTest/FirmwareTest/obj
+/pcb/Ventilator/Ventilator-backups

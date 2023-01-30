@@ -405,12 +405,9 @@
         "microvia_drill": 0.1,
         "name": "220v",
         "nets": [
-          "/Output/220_1",
-          "/Output/220_2",
           "/Output/220_3",
           "/Output/220_4",
-          "/Output/220_5",
-          "/Output/220_6"
+          "/Output/220_5"
         ],
         "pcb_color": "rgba(0, 0, 0, 0.000)",
         "schematic_color": "rgba(0, 0, 0, 0.000)",
@@ -469,7 +466,7 @@
     "last_paths": {
       "gencad": "",
       "idf": "",
-      "netlist": "",
+      "netlist": "../../../../../../Program Files/KiCad/6.0/bin/",
       "specctra_dsn": "../../../../../../Temp/Ventilator.dsn",
       "step": "",
       "vrml": ""
