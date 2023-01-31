@@ -1215,8 +1215,12 @@
   )
 
   (no_connect (at 146.05 85.09) (uuid 5c43dfbb-5566-4eef-9446-c9b75391602d))
+  (no_connect (at 160.02 57.15) (uuid 6f01a88f-659a-4658-bd2a-3d5f7898f57e))
   (no_connect (at 146.05 127) (uuid 75fbbb28-af7c-4897-9b83-6bb0d46305b1))
   (no_connect (at 135.89 85.09) (uuid 826f6721-cd9e-4375-a389-f32a73c286c6))
+  (no_connect (at 160.02 26.67) (uuid 8d331937-bef0-4eee-8dab-ef1a6c55b04d))
+  (no_connect (at 163.83 72.39) (uuid 8faafa98-9737-4e3d-ad16-f0f6ab4b2c12))
+  (no_connect (at 167.64 72.39) (uuid 919cb44c-e1d4-4268-9d94-1fc303168fc5))
   (no_connect (at 135.89 127) (uuid e5843fda-22aa-4dcd-bc34-8323a8d5ae60))
 
   (wire (pts (xy 163.83 22.86) (xy 203.2 22.86))
