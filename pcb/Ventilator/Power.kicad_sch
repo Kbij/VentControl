@@ -459,6 +459,7 @@
     )
   )
 
+
   (junction (at 115.57 81.28) (diameter 0) (color 0 0 0 0)
     (uuid 00524a37-7893-498e-a1ff-5b30fe960406)
   )
@@ -749,7 +750,7 @@
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid c5e05feb-f5a7-4b7c-aa47-0cef025944cd)
     (property "Reference" "D12" (id 0) (at 65.0875 74.93 0))
-    (property "Value" "BAT760,115" (id 1) (at 65.0875 77.47 0))
+    (property "Value" "S07M-M-08" (id 1) (at 65.0875 77.47 0))
     (property "Footprint" "Diode_SMD:D_SMF" (id 2) (at 64.77 81.28 0)
       (effects (font (size 1.27 1.27)) hide)
     )

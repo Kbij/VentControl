@@ -328,7 +328,7 @@
       (reference "D11") (unit 1) (value "LED") (footprint "LED_THT:LED_D3.0mm")
     )
     (path "/90056a8c-29dd-44df-8f0f-1719a894b7ab/c5e05feb-f5a7-4b7c-aa47-0cef025944cd"
-      (reference "D12") (unit 1) (value "BAT760,115") (footprint "Diode_SMD:D_SMF")
+      (reference "D12") (unit 1) (value "S07M-M-08") (footprint "Diode_SMD:D_SMF")
     )
     (path "/792bb004-a162-4568-97c9-870aaf9a8896/819133f3-9c3f-43ea-a090-588faa38be78"
       (reference "H1") (unit 1) (value "WIZ850IO") (footprint "W5500:WIZ850IO")
